@@ -12,14 +12,22 @@
         <input type="text" name="name" placeholder='Name'><br><br>
         <input type="email" name="email" placeholder='Email'><br><br>
         <input type="tel" name="phone" placeholder='Phone'><br><br>
-        <canvas id="canvas" style="display:none;"></canvas>
-        <button id="capture">Capture Photo</button><br><br>
+        <video id="video" width="400" height="300" style="display:none;"></video><br><br>
+        <canvas id="canvas" width="400" height="300" style="display:none;"></canvas><br><br>
+        <button id="startVideo">Start Video</button>
+        <button id="capture" disabled>Capture Photo</button><br><br>
         <input type="submit" id="sub">
     </form>
     <script>
         let form = document.querySelector("#myForm");
+        let video = document.getElementById('video');
         let canvas = document.getElementById('canvas');
+        let startVideoButton = document.getElementById('startVideo');
         let captureButton = document.getElementById('capture');
+
+        startVideoButton.addEventListener('click', () => {
+            startVideo();
+        });
 
         captureButton.addEventListener('click', () => {
             captureImage();
@@ -74,25 +82,25 @@
                 .then(response => response.json());
         }
 
-        // Function to capture image from the camera
-        function captureImage() {
+        // Function to start video stream
+        function startVideo() {
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then(stream => {
-                    let video = document.createElement('video');
                     video.srcObject = stream;
                     video.play();
-                    video.onloadedmetadata = () => {
-                        canvas.width = video.videoWidth;
-                        canvas.height = video.videoHeight;
-                        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                        stream.getTracks().forEach(track => track.stop());
-                        video.remove();
-                        canvas.style.display = 'block';
-                    };
+                    video.style.display = 'block';
+                    canvas.style.display = 'block';
+                    startVideoButton.disabled = true;
+                    captureButton.disabled = false;
                 })
                 .catch(err => {
                     console.error('Error accessing camera: ', err);
                 });
+        }
+
+        // Function to capture image from the camera
+        function captureImage() {
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
         }
     </script>
 </body>
