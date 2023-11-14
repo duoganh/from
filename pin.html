@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin Pin</title>
+</head>
+<body>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+        <h1>Dung lượng pin: <span id="batteryLevel">Đang tải...</span></h1>
+        <p>Trạng thái sạc: <span id="chargingStatus">Đang tải...</span></p>
+    </div>
+
+    <script>
+        navigator.getBattery().then(function(battery) {
+            // Cập nhật dung lượng pin và trạng thái sạc khi trang web được tải
+            updateBatteryInfo(battery);
+
+            // Lắng nghe sự kiện thay đổi dung lượng pin
+            battery.addEventListener('levelchange', function() {
+                updateBatteryInfo(battery);
+            });
+
+            // Lắng nghe sự kiện thay đổi trạng thái pin (đang sạc, không sạc, ...)
+            battery.addEventListener('chargingchange', function() {
+                updateBatteryInfo(battery);
+            });
+        });
+
+        function updateBatteryInfo(battery) {
+            // Cập nhật dung lượng pin trên trang HTML
+            var batteryLevelElement = document.getElementById('batteryLevel');
+            batteryLevelElement.textContent = (battery.level * 100).toFixed(2) + "%";
+
+            // Cập nhật trạng thái sạc trên trang HTML
+            var chargingStatusElement = document.getElementById('chargingStatus');
+            chargingStatusElement.textContent = battery.charging ? "Đang sạc" : "Không sạc";
+        }
+    </script>
+</body>
+</html>
