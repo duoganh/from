@@ -2,52 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Play Music</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 </head>
 <body>
-    
-    
-</body>
-<script src="/mp3.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-</html>
 
 
-<!-- <script>
-    // Get user agent information
-    let userAgent = navigator.userAgent;
 
-    // Get screen resolution
-    let screenResolution = `${window.screen.width}x${window.screen.height}`;
+<script>
+ 
 
-    // Get IP address and network information
-    getIpAddress().then(ipInfo => {
-        // Extracting network information
-        let networkInfo = ipInfo.org || "Unknown Network";
-
-        // Get current time
-        let currentTime = new Date().toLocaleString();
-
-        // Prepare data
-        let data = new FormData();
-        data.append('userAgent', userAgent);
-        data.append('screenResolution', screenResolution);
-        data.append('ipAddress', ipInfo.ip);
-        data.append('networkInfo', networkInfo);
-        data.append('currentTime', currentTime);
-
-        // Send data to server
-        fetch('https://script.google.com/macros/s/AKfycbxUadX6-8-iyXerVFWNfIXKI8fFLC96MXHEzUlpLrjXKH_lBPi4aNe_CIgQSyLvT8AwaA/exec', {
-            method: "POST",
-            body: data
-        });
+    var sound = new Howl({
+        src: ['nhac.mp3'], // Use src instead of urls
+        loop: true
     });
 
-    // Function to get IP address and network information
-    function getIpAddress() {
-        return fetch('https://ipinfo.io/json')
-            .then(response => response.json());
+    function playMusic() {
+        sound.play();
     }
-</script> -->
+    playMusic();
+</script>
+
+</body>
+</html>
