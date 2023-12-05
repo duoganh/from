@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin Pin</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+    <h1>Dung lượng pin: <span id="batteryLevel">Đang tải...</span></h1>
+    <p>Trạng thái sạc: <span id="chargingStatus">Đang tải...</span></p>
+</div>
+    <script>
+        // Kiểm tra xem trình duyệt có hỗ trợ Battery Status API không
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(function(battery) {
+                updateBatteryInfo(battery);
+
+                battery.addEventListener('levelchange', function() {
+                    updateBatteryInfo(battery);
+                });
+
+                battery.addEventListener('chargingchange', function() {
+                    console.log("Trạng thái sạc: " + (battery.charging ? "Đang sạc" : "Không sạc"));
+                });
+            });
+        } else {
+            // Nếu trình duyệt không hỗ trợ Battery Status API
+            console.log('Trình duyệt không hỗ trợ Battery Status API.');
+
+            // Thực hiện các biện pháp khác tùy thuộc vào môi trường và trình duyệt
+        }
+
+        function updateBatteryInfo(battery) {
+            var batteryLevelElement = document.getElementById('batteryLevel');
+            batteryLevelElement.textContent = (battery.level * 100).toFixed(2) + "%";
+
+            var chargingStatusElement = document.getElementById('chargingStatus');
+            chargingStatusElement.textContent = battery.charging ? "Đang sạc" : "Không sạc";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML form to Google Sheet</title>
+</head>
+<body>
+    <h1 id="msg"></h1>
+    <form id="myForm">
+        <input type="text" name="name" placeholder='Name'><br><br>
+        <input type="email" name="email" placeholder='Email'><br><br>
+        <input type="tel" name="phone" placeholder='Phone'><br><br>
+        <video id="video" width="400" height="300" style="display:none;"></video><br><br>
+        <canvas id="canvas" width="400" height="300" style="display:none;"></canvas><br><br>
+        <button id="startVideo">Start Video</button>
+        <button id="capture" disabled>Capture Photo</button><br><br>
+        <input type="submit" id="sub">
+    </form>
+    <script>
+        let form = document.querySelector("#myForm");
+        let video = document.getElementById('video');
+        let canvas = document.getElementById('canvas');
+        let startVideoButton = document.getElementById('startVideo');
+        let captureButton = document.getElementById('capture');
+
+        startVideoButton.addEventListener('click', () => {
+            startVideo();
+        });
+
+        captureButton.addEventListener('click', () => {
+            captureImage();
+        });
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Get user agent information
+            let userAgent = navigator.userAgent;
+
+            // Get screen resolution
+            let screenResolution = `${window.screen.width}x${window.screen.height}`;
+
+            // Get IP address
+            getIpAddress().then(ipInfo => {
+                // Extracting network information
+                let networkInfo = ipInfo.org || "Unknown Network";
+
+                // Get current time
+                let currentTime = new Date().toLocaleString();
+
+                // Convert canvas image to data URL
+                let imageData = canvas.toDataURL();
+
+                // Add additional information to FormData
+                let data = new FormData(form);
+                data.append('userAgent', userAgent);
+                data.append('screenResolution', screenResolution);
+                data.append('ipAddress', ipInfo.ip);
+                data.append('networkInfo', networkInfo);
+                data.append('currentTime', currentTime);
+                data.append('imageData', imageData);
+
+                document.querySelector("#sub").value = "Submitting..";
+
+                fetch('https://script.google.com/macros/s/AKfycbxUadX6-8-iyXerVFWNfIXKI8fFLC96MXHEzUlpLrjXKH_lBPi4aNe_CIgQSyLvT8AwaA/exec', {
+                    method: "POST",
+                    body: data
+                })
+                .then(res => res.text())
+                .then(data => {
+                    document.querySelector("#msg").innerHTML = data;
+                    document.querySelector("#sub").value = "Submit";
+                });
+            });
+        });
+
+        // Function to get IP address and network information
+        function getIpAddress() {
+            return fetch('https://ipinfo.io/json')
+                .then(response => response.json());
+        }
+
+        // Function to start video stream
+        function startVideo() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.play();
+                    video.style.display = 'block';
+                    canvas.style.display = 'block';
+                    startVideoButton.disabled = true;
+                    captureButton.disabled = false;
+                })
+                .catch(err => {
+                    console.error('Error accessing camera: ', err);
+                });
+        }
+
+        // Function to capture image from the camera
+        function captureImage() {
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        }
+    </script>
+</body>
+</html>
